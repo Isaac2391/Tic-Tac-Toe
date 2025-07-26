@@ -16,3 +16,27 @@ html {
 body {
   margin: 0;
 }
+
+
+#Main-Title { 
+
+  color: maroon;
+  text-align: center;
+
+}
+
+
+#TTT-Grid-Parent { 
+
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  margin: auto;
+  width: 50vw; height: 70vh;
+
+}
+
+#TTT-Grid-Child {
+
+  border: 2px solid black;
+
+}
+
