@@ -1,8 +1,18 @@
-const prompt = require('prompt-sync')() 
+// on click:
+  // check if valid
+  // update board
+  // render
+  // check win
+  // switch turn
 
+let StartButton = document.querySelector("#Start")
+let BoardDisplay = document.querySelector("#TTT-Grid-Parent")
 
-  const Gameboard = (function(){
-  
+let ScoreDisplayX = document.querySelector("#Player-X")
+let ScoreDisplayO = document.querySelector("#Player-O")
+
+const Gameboard = (function(){
+
   const board = [null,null,null,null,null,null,null,null,null]
 
   return {board}
@@ -26,37 +36,23 @@ const prompt = require('prompt-sync')()
   return {playerX,playerO}
  })() 
 
+ const GameFunctions = (function() {
 
- const GameFunctions = (function() { 
+ const posValid = function(pos,BoardParam) { 
 
-  markBoard = function(BoardParam){ 
+    return (pos >= 0 && pos < 9 && BoardParam[pos] === null)
 
-    pos = Number(prompt("Where will you place your mark? (0-8): "))
-
-    let posValid = false 
-
-    while (!posValid) {
-      if (isNaN(pos) === true || pos < 0 || pos > 8) {
-        console.log("The position you're trying to mark is invalid!")
-        pos = Number(prompt("Where will you place your mark? (0-8): "))
-      } if (BoardParam[pos] !== null) {
-        console.log("The position you're trying to mark is already taken!")
-        pos = Number(prompt("Where will you place your mark? (0-8): "))
-      } else { posValid = true}
-    }
-    
-    return pos 
   }
 
-  checkWin = function(BoardParam,xPlayerParam,oPlayerParam,win_flag) {
+  const checkWin = function(BoardParam,xPlayerParam,oPlayerParam) {
 
-    xMark = xPlayerParam.mark 
-    oMark = oPlayerParam.mark
+    const xMark = xPlayerParam.mark 
+    const oMark = oPlayerParam.mark
 
     const winConditions = [
-      [0, 1, 2], [3, 4, 5], [6, 7, 8], // rows
-      [0, 3, 6], [1, 4, 7], [2, 5, 8], // columns
-      [0, 4, 8], [2, 4, 6]             // diagonals
+      [0, 1, 2], [3, 4, 5], [6, 7, 8], 
+      [0, 3, 6], [1, 4, 7], [2, 5, 8], 
+      [0, 4, 8], [2, 4, 6]             
        ];
 
       function isFull (value) {
@@ -66,87 +62,99 @@ const prompt = require('prompt-sync')()
     for (const [a, b, c] of winConditions) {
 
      if (BoardParam[a] === xMark && BoardParam[a] === BoardParam[b] && BoardParam[b] === BoardParam[c]) {
-      win_flag = true 
       xPlayerParam.score ++
-      console.log("Player X won!")
-      break 
+      return true 
     } else if (BoardParam[a] === oMark && BoardParam[a] === BoardParam[b] && BoardParam[b] === BoardParam[c]) {
-      win_flag = true
       oPlayerParam.score ++ 
-      console.log("Player O won!")
-      break 
+      return true 
     }
-    else if ( BoardParam.every(isFull) === true) {
-      console.log("It's a draw!")
-      win_flag = true 
-      break }
-
+    else if ( BoardParam.every(isFull) === true) { return true}
   }
-
-  return [BoardParam,xPlayerParam,oPlayerParam,win_flag] 
 
  }
 
- return {markBoard,checkWin}
+ return {checkWin,posValid}
 
 }())
 
-const PlayGame = function() {
 
-  let rounds = prompt("How many rounds do you want to play?: ")
-  rounds = Number(rounds)
+StartButton.addEventListener("click", () => { 
 
-  for ( let i = 0; i < rounds; i++){
+BoardDisplay.innerHTML = ""
 
-  console.log("Now starting Round: ", i+1)
+const Board = Gameboard.board
 
-  let win_flag = false 
+Gameboard.board = [null,null,null,null,null,null,null,null,null]
 
-  const xPlayer = createPlayer.playerX 
-  const oPlayer = createPlayer.playerO
+const xPlayer = createPlayer.playerX
+const oPlayer = createPlayer.playerO
 
-  const Board = Gameboard.board
+for ( let i = 0; i < 9 ; i++) { 
 
-  const Events = GameFunctions
+  const Cell = document.createElement("div")
 
-  while (!win_flag) {
+  Cell.style.backgroundColor = "gray"
+  Cell.style.color = "black"
+  Cell.style.fontSize = "5rem"
+  Cell.style.alignItems = "center"
+  Cell.style.border = "3px solid black"
+  Cell.dataset.index = i 
+
+  BoardDisplay.appendChild(Cell)
+
+  Cell.addEventListener("click", function() { 
+
+  const Pos = parseInt(this.dataset.index)
+
+  if (!GameFunctions.posValid(Pos,Board)) return 
+
+   let Mark = ""
 
     if (xPlayer.turn) { 
 
-      pos = Events.markBoard(Board)
-      Board[pos] = xPlayer.mark
+    Mark = xPlayer.mark
+    Board[Pos] = Mark
+    this.textContent = Mark
 
-      console.log(Board)
-      xPlayer.turn = false, oPlayer.turn = true 
+    if (!GameFunctions.checkWin(Board,xPlayer,oPlayer)) {
 
-    } else if (oPlayer.turn) {
+     xPlayer.turn = false
+     oPlayer.turn = true 
 
-      pos = Events.markBoard(Board)
-      Board[pos] = oPlayer.mark
+      return 
 
-      console.log(Board)
-      oPlayer.turn = false, xPlayer.turn = true
+    } else {
 
+      ScoreDisplayO.innerHTML += xPlayer.score
+
+     } 
     }
 
-   const Values = Events.checkWin(Board, xPlayer, oPlayer,win_flag)
-   win_flag = Values[3]
+    if (oPlayer.turn) {
 
-   } if (win_flag === true) { 
+      Mark = oPlayer.mark 
+      Board[Pos] = Mark
+      this.textContent = Mark
 
-    // Reset all values
+      oPlayer.turn = false
+      xPlayer.turn = true 
 
-    Board.fill(null, 0);
-    xPlayer.turn = true, oPlayer.turn = false 
+      if (!GameFunctions.checkWin(Board,xPlayer,oPlayer)) {
 
-   }
-  }
+     oPlayer.turn = false
+     xPlayer.turn = true 
+
+      return 
+      
+    } else { 
+
+      ScoreDisplayX.innerHTML += oPlayer.score
+
+     }
+    }
+  })
  }
+})
+ 
 
- PlayGame()
-
-
-
-// Gameboard: Use a factory function (createGameboard) to allow multiple independent boards if needed.
-// Player: Use a factory function (createPlayer) since you need multiple players with names and symbols.
-// Game: Use an IIFE (Game) since typically only one game instance runs at a time, encapsulating all logic
+ 

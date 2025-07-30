@@ -34,9 +34,12 @@ body {
 
 }
 
-#TTT-Grid-Child {
+#Start { 
 
-  border: 2px solid black;
-
+  text-align: center; color: green; font: bold; 
+  cursor: pointer;
 }
 
+#Score { 
+ text-align: center; 
+ gap: 3vw;}
