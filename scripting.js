@@ -8,8 +8,16 @@
 let StartButton = document.querySelector("#Start")
 let BoardDisplay = document.querySelector("#TTT-Grid-Parent")
 
-let ScoreDisplayX = document.querySelector("#Player-X")
-let ScoreDisplayO = document.querySelector("#Player-O")
+let ScoreDisplayX = document.querySelector("#X-Score")
+let ScoreDisplayO = document.querySelector("#O-Score")
+
+ScoreDisplayO.style.color = "blue"
+ScoreDisplayO.style.fontSize = "1.5rem"
+
+ScoreDisplayX.style.color = "red"
+ScoreDisplayX.style.fontSize = "1.5rem"
+
+
 
 const Gameboard = (function(){
 
@@ -62,18 +70,29 @@ const Gameboard = (function(){
     for (const [a, b, c] of winConditions) {
 
      if (BoardParam[a] === xMark && BoardParam[a] === BoardParam[b] && BoardParam[b] === BoardParam[c]) {
-      xPlayerParam.score ++
       return true 
     } else if (BoardParam[a] === oMark && BoardParam[a] === BoardParam[b] && BoardParam[b] === BoardParam[c]) {
-      oPlayerParam.score ++ 
       return true 
     }
-    else if ( BoardParam.every(isFull) === true) { return true}
+    else if ( BoardParam.every(isFull) === true) { return "Draw"}
   }
 
  }
 
- return {checkWin,posValid}
+ const resetGame = function(BoardDisplay,GameboardArr,xPlayer,oPlayer,) { 
+
+  BoardDisplay.innerHTML = ""
+
+  Gameboard.board = [null,null,null,null,null,null,null,null,null]
+
+  xPlayer = createPlayer.playerX
+  oPlayer = createPlayer.playerO
+
+  return {BoardDisplay,GameboardArr,xPlayer,oPlayer}
+
+ }
+
+ return {checkWin,posValid,resetGame}
 
 }())
 
@@ -93,7 +112,7 @@ for ( let i = 0; i < 9 ; i++) {
 
   const Cell = document.createElement("div")
 
-  Cell.style.backgroundColor = "gray"
+  Cell.style.backgroundColor = "lightgray"
   Cell.style.color = "black"
   Cell.style.fontSize = "5rem"
   Cell.style.alignItems = "center"
@@ -112,11 +131,17 @@ for ( let i = 0; i < 9 ; i++) {
 
     if (xPlayer.turn) { 
 
+    Cell.style.color = "red"
+
     Mark = xPlayer.mark
     Board[Pos] = Mark
     this.textContent = Mark
 
-    if (!GameFunctions.checkWin(Board,xPlayer,oPlayer)) {
+    if (GameFunctions.checkWin(Board,xPlayer,oPlayer) === "Draw") {
+
+    GameFunctions.resetGame(BoardDisplay,Gameboard.board,xPlayer,oPlayer)      
+
+    } else if (!GameFunctions.checkWin(Board,xPlayer,oPlayer)) {
 
      xPlayer.turn = false
      oPlayer.turn = true 
@@ -125,21 +150,26 @@ for ( let i = 0; i < 9 ; i++) {
 
     } else {
 
-      ScoreDisplayO.innerHTML += xPlayer.score
+      xPlayer.score += 1 
+      ScoreDisplayX.innerHTML = xPlayer.score 
+      GameFunctions.resetGame(BoardDisplay,Gameboard.board,xPlayer,oPlayer)      
 
      } 
     }
 
     if (oPlayer.turn) {
 
+      Cell.style.color = "blue"
+
       Mark = oPlayer.mark 
-      Board[Pos] = Mark
+      Board[Pos] = Mark 
       this.textContent = Mark
 
-      oPlayer.turn = false
-      xPlayer.turn = true 
+    if (GameFunctions.checkWin(Board,xPlayer,oPlayer) === "Draw") {
 
-      if (!GameFunctions.checkWin(Board,xPlayer,oPlayer)) {
+    GameFunctions.resetGame(BoardDisplay,Gameboard.board,xPlayer,oPlayer)      
+
+    } else if (!GameFunctions.checkWin(Board,xPlayer,oPlayer)) {
 
      oPlayer.turn = false
      xPlayer.turn = true 
@@ -148,7 +178,9 @@ for ( let i = 0; i < 9 ; i++) {
       
     } else { 
 
-      ScoreDisplayX.innerHTML += oPlayer.score
+      oPlayer.score += 1
+      ScoreDisplayO.innerHTML = oPlayer.score 
+      GameFunctions.resetGame(BoardDisplay,Board,xPlayer,oPlayer)
 
      }
     }

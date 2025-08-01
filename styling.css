@@ -5,7 +5,7 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-kerning: auto;
-  background-color: burlywood;
+  background-color: lightblue;
 }
 
 html {
@@ -15,12 +15,14 @@ html {
 
 body {
   margin: 0;
+  background-color: "cobaltblue";
+
 }
 
 
 #Main-Title { 
 
-  color: maroon;
+  color: blueviolet;
   text-align: center;
 
 }
@@ -41,5 +43,4 @@ body {
 }
 
 #Score { 
- text-align: center; 
- gap: 3vw;}
+display: flex; justify-content: center; align-items: center; gap: 1.5vw;}
