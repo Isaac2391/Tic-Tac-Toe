@@ -4,4 +4,4 @@ Console version;
 
 Web Version ( WIP V1 );
 
-<img width="2550" height="1293" alt="image" src="https://github.com/user-attachments/assets/3b7d4cbe-ce5a-4184-b516-edc8d48b0852" />
+<img width="1907" height="956" alt="image" src="https://github.com/user-attachments/assets/b988dc5c-4cc7-4b34-aef9-d17c2e4ffb55" />
